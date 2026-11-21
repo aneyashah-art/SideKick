@@ -1,11 +1,11 @@
 /* =========================================================
    0. ONE-TIME MIGRATION
    ========================================================= */
-if (!localStorage.getItem("sidekickCleanV1")) {
+if (!localStorage.getItem("sidekickCleanV14")) {
   Object.keys(localStorage).forEach(key => {
     if (key.startsWith("sk_")) localStorage.removeItem(key);
   });
-  localStorage.setItem("sidekickCleanV1", "true");
+  localStorage.setItem("sidekickCleanV14", "true");
 }
 
 /* =========================================================
@@ -89,7 +89,7 @@ function getSubjectCategory(subject) {
 }
 
 /* =========================================================
-   2. AUTH & ONBOARDING FLOW
+   2. AUTH & ONBOARDING FLOW (MANDATORY LEVEL SELECTION)
    ========================================================= */
 const authPages = [
   "auth-page", "signup-step-1", "signup-step-2", "signup-step-3",
@@ -153,14 +153,15 @@ document.getElementById("account-form").addEventListener("submit", e => {
       const wrapper = document.createElement("div");
       wrapper.className = "subject-chip-wrapper";
 
+      const levels = levelsMap[subj];
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "subject-button";
       btn.dataset.subject = subj;
+      btn.dataset.hasLevels = levels ? "true" : "false";
       btn.dataset.level = "";
       btn.textContent = subj;
 
-      const levels = levelsMap[subj];
       let levelRow = null;
 
       if (levels) {
@@ -176,7 +177,7 @@ document.getElementById("account-form").addEventListener("submit", e => {
           pill.addEventListener("click", () => {
             levelRow.querySelectorAll(".level-pill").forEach(p => p.classList.remove("active"));
             pill.classList.add("active");
-            btn.dataset.level = lvl === "N/A" ? "" : lvl;
+            btn.dataset.level = lvl; // Stores "N/A" explicitly when N/A is chosen
           });
           levelRow.appendChild(pill);
         });
@@ -210,13 +211,26 @@ function getAccounts() {
 }
 
 document.getElementById("finish-signup").addEventListener("click", () => {
-  const selected = [...document.querySelectorAll(".subject-button.selected")].map(b => {
+  const selectedButtons = [...document.querySelectorAll(".subject-button.selected")];
+
+  if (selectedButtons.length === 0) {
+    return alert("Please select at least one subject!");
+  }
+
+  // Enforce mandatory level selection for subjects that have levels
+  const missingLevelSubjects = selectedButtons
+    .filter(b => b.dataset.hasLevels === "true" && !b.dataset.level)
+    .map(b => b.dataset.subject);
+
+  if (missingLevelSubjects.length > 0) {
+    return alert(`Please choose a level (or N/A) for: ${missingLevelSubjects.join(", ")}`);
+  }
+
+  const selected = selectedButtons.map(b => {
     const subj = b.dataset.subject;
     const lvl = b.dataset.level;
-    return lvl ? `${subj} (${lvl})` : subj;
+    return lvl && lvl !== "N/A" ? `${subj} (${lvl})` : subj;
   });
-
-  if (selected.length === 0) return alert("Please select at least one subject!");
 
   const email = document.getElementById("signup-email").value.trim().toLowerCase();
   const accounts = getAccounts();
@@ -946,7 +960,7 @@ function renderFocusPage() {
 }
 
 /* =========================================================
-   8. INTERESTS, COLLECTIBLES (.JPG ROTATION) & POMODORO BG
+   8. INTERESTS, COLLECTIBLES & POMODORO BACKGROUNDS (.JPG)
    ========================================================= */
 const interestIcons = {
   Arts: "🎨", Music: "🎵", Dance: "💃", Sports: "🏀",
@@ -1075,21 +1089,54 @@ document.querySelectorAll("#interests-checkboxes input[type='checkbox']").forEac
 });
 
 const themePalettes = {
-  "Default":       { primary: "#2A4F8D", secondary: "#86AADF", tertiary: "#DDEDFB", pomoBg: "url('images/pomodoro/default.jpg')" },
-  "Ember":         { primary: "#A8302B", secondary: "#F30B01", tertiary: "#F46A62", pomoBg: "url('images/pomodoro/ember.jpg')" },
-  "Sunset":        { primary: "#FF904E", secondary: "#F5B738", tertiary: "#FFDB92", pomoBg: "url('images/pomodoro/sunset.jpg')" },
-  "Nature":        { primary: "#344740", secondary: "#8EAC6A", tertiary: "#DAE6C8", pomoBg: "url('images/pomodoro/nature.jpg')" },
-  "Galaxy":        { primary: "#471AA1", secondary: "#A168C8", tertiary: "#BEA8DE", pomoBg: "url('images/pomodoro/galaxy.jpg')" },
-  "Y2K":           { primary: "#FF0091", secondary: "#FF66C4", tertiary: "linear-gradient(135deg, #AFAFAF, #F6F6F6)", pomoBg: "url('images/pomodoro/y2k.jpg')" },
-  "Black & White": { primary: "#000000", secondary: "#A6A6A6", tertiary: "#FFFFFF", pomoBg: "url('images/pomodoro/b&w.jpg')" }
+  "Default":       { primary: "#2A4F8D", secondary: "#86AADF", tertiary: "#DDEDFB", pomoFile: "default" },
+  "Ember":         { primary: "#A8302B", secondary: "#F30B01", tertiary: "#F46A62", pomoFile: "ember" },
+  "Sunset":        { primary: "#FF904E", secondary: "#F5B738", tertiary: "#FFDB92", pomoFile: "sunset" },
+  "Nature":        { primary: "#344740", secondary: "#8EAC6A", tertiary: "#DAE6C8", pomoFile: "nature" },
+  "Galaxy":        { primary: "#471AA1", secondary: "#A168C8", tertiary: "#BEA8DE", pomoFile: "galaxy" },
+  "Y2K":           { primary: "#FF0091", secondary: "#FF66C4", tertiary: "linear-gradient(135deg, #AFAFAF, #F6F6F6)", pomoFile: "y2k" },
+  "Black & White": { primary: "#000000", secondary: "#A6A6A6", tertiary: "#FFFFFF", pomoFile: "bw" }
 };
+
+/* Resolves case/extension variations (.jpg, .JPG, .jpeg, capitalized) for Pomodoro backgrounds */
+function setResolvedPomodoroBg(fileSlug) {
+  if (!fileSlug) {
+    document.documentElement.style.setProperty("--pomo-bg-image", "none");
+    return;
+  }
+
+  const cap = fileSlug.charAt(0).toUpperCase() + fileSlug.slice(1);
+  const candidates = [
+    `images/pomodoro/${fileSlug}.jpg`,
+    `images/pomodoro/${cap}.jpg`,
+    `images/pomodoro/${fileSlug}.JPG`,
+    `images/pomodoro/${fileSlug}.jpeg`,
+    `images/pomodoro/${fileSlug}.png`,
+    `images/pomodoro/default.jpg`
+  ];
+
+  let idx = 0;
+  const probe = new Image();
+  probe.onload = () => {
+    document.documentElement.style.setProperty("--pomo-bg-image", `url('${candidates[idx]}')`);
+  };
+  probe.onerror = () => {
+    idx++;
+    if (idx < candidates.length) {
+      probe.src = candidates[idx];
+    } else {
+      document.documentElement.style.setProperty("--pomo-bg-image", "none");
+    }
+  };
+  probe.src = candidates[0];
+}
 
 function getCustomPalette() {
   return JSON.parse(localStorage.getItem(userKey("customPalette"))) || {
     primary: "#2A4F8D",
     secondary: "#86AADF",
     tertiary: "#DDEDFB",
-    pomoBg: "url('images/pomodoro/default.jpg')"
+    pomoFile: "default"
   };
 }
 
@@ -1107,7 +1154,6 @@ function applyTheme(name) {
     document.getElementById("swatch-custom-2").style.background = p.secondary;
     document.getElementById("swatch-custom-3").style.background = p.tertiary;
 
-    // Swap secondary and tertiary CSS variables for the Custom theme
     document.documentElement.style.setProperty("--primary", p.primary);
     document.documentElement.style.setProperty("--secondary", p.tertiary);
     document.documentElement.style.setProperty("--tertiary", p.secondary);
@@ -1131,11 +1177,8 @@ function applyTheme(name) {
     document.documentElement.style.setProperty("--pomo-bg-image", `url('${customPomoBg}')`);
     if (resetBtn) resetBtn.hidden = false;
   } else {
-    document.documentElement.style.setProperty(
-      "--pomo-bg-image",
-      effects.backgrounds && p.pomoBg ? p.pomoBg : "none"
-    );
     if (resetBtn) resetBtn.hidden = true;
+    setResolvedPomodoroBg(effects.backgrounds ? (p.pomoFile || "default") : null);
   }
 
   document.getElementById("active-theme-label").textContent = name;
@@ -1177,7 +1220,7 @@ document.querySelectorAll(".theme-option").forEach(btn => {
       primary: document.getElementById("custom-primary").value,
       secondary: document.getElementById("custom-secondary").value,
       tertiary: document.getElementById("custom-tertiary").value,
-      pomoBg: "url('images/pomodoro/default.jpg')"
+      pomoFile: "default"
     };
     localStorage.setItem(userKey("customPalette"), JSON.stringify(custom));
     applyTheme("Custom");
