@@ -1,11 +1,11 @@
 /* =========================================================
    0. ONE-TIME MIGRATION
    ========================================================= */
-if (!localStorage.getItem("sidekickCleanV14")) {
+if (!localStorage.getItem("sidekickCleanV1")) {
   Object.keys(localStorage).forEach(key => {
     if (key.startsWith("sk_")) localStorage.removeItem(key);
   });
-  localStorage.setItem("sidekickCleanV14", "true");
+  localStorage.setItem("sidekickCleanV1", "true");
 }
 
 /* =========================================================
@@ -1081,7 +1081,7 @@ const themePalettes = {
   "Nature":        { primary: "#344740", secondary: "#8EAC6A", tertiary: "#DAE6C8", pomoBg: "url('images/pomodoro/nature.jpg')" },
   "Galaxy":        { primary: "#471AA1", secondary: "#A168C8", tertiary: "#BEA8DE", pomoBg: "url('images/pomodoro/galaxy.jpg')" },
   "Y2K":           { primary: "#FF0091", secondary: "#FF66C4", tertiary: "linear-gradient(135deg, #AFAFAF, #F6F6F6)", pomoBg: "url('images/pomodoro/y2k.jpg')" },
-  "Black & White": { primary: "#000000", secondary: "#A6A6A6", tertiary: "#FFFFFF", pomoBg: "url('images/pomodoro/bw.jpg')" }
+  "Black & White": { primary: "#000000", secondary: "#A6A6A6", tertiary: "#FFFFFF", pomoBg: "url('images/pomodoro/b&w.jpg')" }
 };
 
 function getCustomPalette() {
