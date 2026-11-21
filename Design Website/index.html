@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SideKick — Student Planner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;600;700&family=Schoolbell&display=swap" rel="stylesheet">
+  <link href="https://fonts.cdnfonts.com/css/glacial-indifference-2" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=12">
+  <script src="script.js?v=12" defer></script>
+</head>
+<body>
+
+  <!-- =========================================================
+       AUTHENTICATION & ONBOARDING SCREENS
+       ========================================================= -->
+  <main id="auth-page" class="auth-wrapper">
+    <div class="auth-card">
+      <h1 class="brand-title">SideKick</h1>
+      <h2>Welcome to SideKick!</h2>
+      <p>Your companion for getting things done the fun way!</p>
+      <div class="auth-buttons">
+        <button id="signup-button" type="button" class="btn-primary">Sign Up!</button>
+        <button id="login-button" type="button" class="btn-secondary">Login!</button>
+      </div>
+    </div>
+  </main>
+
+  <section id="signup-step-1" class="auth-wrapper" hidden>
+    <div class="auth-card">
+      <h2>First things first:</h2>
+      <p>What should we call you?</p>
+      <form id="name-form" class="stacked-form">
+        <label for="first-name">First Name</label>
+        <input type="text" id="first-name" placeholder="Enter your first name" required>
+        <label for="last-name">Last Name</label>
+        <input type="text" id="last-name" placeholder="Enter your last name" required>
+        <button type="submit" class="btn-primary">Next</button>
+      </form>
+    </div>
+  </section>
+
+  <section id="signup-step-2" class="auth-wrapper" hidden>
+    <div class="auth-card">
+      <h2>What grade are you in?</h2>
+      <p>We'll use this to personalise your subjects.</p>
+      <form id="grade-form" class="stacked-form">
+        <label for="signup-grade">Select your grade</label>
+        <select id="signup-grade" required>
+          <option value="">Choose your grade</option>
+          <option value="6">Grade 6</option>
+          <option value="7">Grade 7</option>
+          <option value="8">Grade 8</option>
+          <option value="9">Grade 9</option>
+          <option value="10">Grade 10</option>
+          <option value="11">Grade 11</option>
+          <option value="12">Grade 12</option>
+        </select>
+        <button type="submit" class="btn-primary">Next</button>
+      </form>
+    </div>
+  </section>
+
+  <section id="signup-step-3" class="auth-wrapper" hidden>
+    <div class="auth-card">
+      <h2>Almost there!</h2>
+      <p>Create your account details.</p>
+      <form id="account-form" class="stacked-form">
+        <label for="signup-email">Email Address</label>
+        <input type="email" id="signup-email" placeholder="you@school.edu" required>
+        <label for="signup-password">Password</label>
+        <input type="password" id="signup-password" placeholder="At least 8 characters" minlength="8" required>
+        <button type="submit" class="btn-primary">Continue</button>
+      </form>
+    </div>
+  </section>
+
+  <section id="subjects-page" class="auth-wrapper" hidden>
+    <div class="auth-card wide-card">
+      <h2>Select Your Subjects</h2>
+      <p>Choose your classes and select a level where applicable:</p>
+      <div id="subject-options" class="subject-grid"></div>
+      <button id="finish-signup" type="button" class="btn-primary">Let's Go!</button>
+    </div>
+  </section>
+
+  <section id="login-page" class="auth-wrapper" hidden>
+    <div class="auth-card">
+      <h2>Welcome back!</h2>
+      <p>Ready to get things done?</p>
+      <form id="login-form" class="stacked-form">
+        <label for="login-email">Email</label>
+        <input type="email" id="login-email" placeholder="Enter your email" required>
+        <label for="login-password">Password</label>
+        <input type="password" id="login-password" placeholder="Enter your password" required>
+        <button type="submit" class="btn-primary">Log In</button>
+      </form>
+      <button type="button" id="forgot-password-button" class="text-link">Forgot Password?</button>
+      <button type="button" id="back-to-auth" class="text-link">Back</button>
+    </div>
+  </section>
+
+  <section id="forgot-password-page" class="auth-wrapper" hidden>
+    <div class="auth-card">
+      <h2>Reset Password</h2>
+      <p>Enter your registered email and a new password.</p>
+      <form id="reset-password-form" class="stacked-form">
+        <label for="reset-email">Email Address</label>
+        <input type="email" id="reset-email" required>
+        <label for="new-password">New Password</label>
+        <input type="password" id="new-password" minlength="8" required>
+        <label for="confirm-password">Confirm Password</label>
+        <input type="password" id="confirm-password" minlength="8" required>
+        <button type="submit" class="btn-primary">Reset Password</button>
+      </form>
+      <button type="button" id="back-to-login" class="text-link">Back to Login</button>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       MAIN PLANNER APP SHELL (SHARED TOP BAR + 4 PAGES)
+       ========================================================= -->
+  <div id="app-shell" class="app-shell" hidden>
+
+    <!-- SHARED NAVIGATION BAR -->
+    <header class="top-navbar">
+      <div class="nav-brand">
+        <span class="brand-dot"></span>
+        <span class="brand-name">SideKick</span>
+      </div>
+
+      <button id="mobile-menu-toggle" class="mobile-hamburger" type="button" aria-label="Menu">☰</button>
+
+      <nav id="main-nav" class="nav-links">
+        <button type="button" class="nav-tab active" data-tab="home">🏠 <span data-section-label="home">Home</span></button>
+        <button type="button" class="nav-tab" data-tab="tasks">📋 <span data-section-label="tasks">Tasks</span></button>
+        <button type="button" class="nav-tab" data-tab="focus">🕒 <span data-section-label="focus">Focus</span></button>
+        <button type="button" class="nav-tab" data-tab="settings">🎨 <span data-section-label="settings">Settings</span></button>
+        <button type="button" id="managebac-btn" class="nav-tab external-tab">↗ ManageBac</button>
+      </nav>
+
+      <div class="nav-stats">
+        <button type="button" id="notif-toggle" class="stat-pill" title="Toggle Notifications">🔔</button>
+        <span id="nav-stars-pill" class="stat-pill">★ <strong id="header-stars">0</strong></span>
+        <span id="nav-streak-pill" class="stat-pill">🔥 <strong id="header-streak">0</strong></span>
+        <button type="button" id="profile-avatar-btn" class="avatar-btn" title="Profile">👤</button>
+      </div>
+    </header>
+
+    <!-- =========================================================
+         PAGE 1: HOME PAGE
+         ========================================================= -->
+    <section id="page-home" class="app-page">
+      <div class="home-header-row">
+        <div class="date-display">
+          <strong id="current-day"></strong>
+          <span id="current-date" class="font-railey"></span>
+        </div>
+
+        <div class="greeting-display">
+          <h1>
+            <span id="interest-greeting-icon"></span>
+            <span id="greeting-prefix">Good morning,</span>
+            <span id="greeting-name" class="font-amoresa-reg"></span>
+          </h1>
+          <p class="font-amoresa-aged motto-text">- Seize the day! -</p>
+        </div>
+
+        <button type="button" id="theme-shortcut-btn" class="theme-badge">
+          Theme: <span id="active-theme-label" class="font-amoresa-aged">Default</span> &gt;
+        </button>
+      </div>
+
+      <div class="home-top-grid">
+        <div class="home-stats-col">
+          <div class="mini-stats-row">
+            <div id="home-streak-card" class="card tint-card stat-box">
+              <div class="stat-figure">
+                <span class="big-emoji">🔥</span>
+                <div>
+                  <strong id="streak-count">0</strong>
+                  <span class="font-railey">day<br>streak!</span>
+                </div>
+              </div>
+              <p id="streak-subtext" class="font-railey sub-caption">Start your streak today!</p>
+            </div>
+
+            <div id="home-stars-card" class="card tint-card stat-box">
+              <div class="stat-figure">
+                <span class="big-emoji">★</span>
+                <div>
+                  <strong id="stars-count">0</strong>
+                  <span class="font-railey">stars!</span>
+                </div>
+              </div>
+              <p class="sub-caption"><span id="available-stars" class="font-amoresa-aged">+0</span> <span class="font-railey">available today!</span></p>
+            </div>
+          </div>
+
+          <div class="card white-card progress-box">
+            <div class="progress-top">
+              <div>
+                <strong>Today's progress</strong>
+                <span id="progress-text" class="font-railey">0/0 tasks completed!</span>
+              </div>
+              <span id="progress-percent" class="font-amoresa-aged">0%</span>
+            </div>
+            <div class="progress-bar-bg">
+              <div id="progress-bar-fill" class="progress-bar-fill" style="width: 0%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Collectibles -->
+        <div id="home-collectibles-card" class="card white-card collectibles-box">
+          <button type="button" id="upload-collectible-btn" class="collectible-camera-btn" title="Upload your own collectible background picture">📷</button>
+          <input type="file" id="collectible-file-input" accept="image/*" hidden>
+
+          <h2 class="font-amoresa-aged card-script-title">Collectibles</h2>
+          <div class="puzzle-grid" id="collectible-puzzle">
+            <div id="collectible-artwork" class="collectible-artwork"></div>
+            <div id="puzzle-cells" class="puzzle-cells"></div>
+          </div>
+          <small id="collectibles-progress-label" class="font-schoolbell">0/9 tiles unlocked • 1 tile = 20 ★</small>
+        </div>
+
+        <!-- Tasks Upcoming -->
+        <div class="card tint-card upcoming-box">
+          <div class="upcoming-header">
+            <h2>Tasks</h2>
+            <span class="font-amoresa-aged">upcoming!</span>
+          </div>
+          <div id="home-upcoming-list" class="upcoming-items"></div>
+          <button type="button" id="go-to-tasks-arrow" class="corner-arrow" title="View all tasks">&gt;</button>
+        </div>
+      </div>
+
+      <div class="home-bottom-grid">
+        <!-- Notes -->
+        <div class="card white-card notes-container">
+          <div class="notes-palette">
+            <button type="button" data-cmd="bold" title="Bold"><strong>B</strong></button>
+            <button type="button" data-cmd="italic" title="Italic"><em>i</em></button>
+            <button type="button" data-cmd="underline" title="Underline"><u>U</u></button>
+            <button type="button" data-cmd="strikeThrough" title="Strikethrough"><s>S</s></button>
+            <button type="button" data-cmd="align" title="Align">≡</button>
+            <button type="button" data-cmd="star" title="Star bullet">★</button>
+            <button type="button" data-cmd="font" title="Switch font"><em>a</em></button>
+            <button type="button" data-cmd="highlight" title="Highlight"><span class="box-a">A</span></button>
+            <button type="button" data-cmd="color" title="Text colour"><span class="line-a">A</span></button>
+          </div>
+
+          <div class="notes-pad">
+            <div class="notes-pad-top">
+              <button type="button" id="add-note-chip-btn" class="circle-plus" title="Add note line">+</button>
+              <span class="font-amoresa-aged notes-label">notes</span>
+            </div>
+            <div id="note-editor" class="rich-note-area" contenteditable="true" data-placeholder="Click + or write your notes here..."></div>
+            <div class="notes-pad-bottom">
+              <span id="note-save-status">Your notes</span>
+              <button type="button" id="save-note-btn" class="mini-btn">Save</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card white-card quick-actions-box">
+          <button type="button" id="qa-add-task" class="qa-btn"><span class="qa-circle">+</span> Add task</button>
+          <button type="button" id="qa-enable-pomodoro" class="qa-btn"><span class="qa-circle" id="qa-pomo-icon">🕒</span> Enable Pomodoro</button>
+          <button type="button" id="qa-complete-task" class="qa-btn"><span class="qa-circle">✓</span> Complete task</button>
+        </div>
+
+        <!-- My Goals -->
+        <div class="card white-card goals-box">
+          <div class="goals-top">
+            <h2 class="font-amoresa-aged">My Goals</h2>
+            <button type="button" id="toggle-goal-form" class="circle-plus" title="Add Goal">+</button>
+          </div>
+          <form id="home-goal-form" class="inline-add-form" hidden>
+            <input type="text" id="home-goal-input" placeholder="Enter a goal..." required>
+            <button type="submit" class="mini-btn">Add</button>
+          </form>
+          <div id="home-goals-list" class="goals-items"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         PAGE 2: TASKS PAGE
+         ========================================================= -->
+    <section id="page-tasks" class="app-page" hidden>
+      <div class="tasks-layout">
+        <div class="tasks-main-col">
+          <div class="tasks-top-bar">
+            <div class="tasks-title-group">
+              <h1 class="page-heading">📋 <span data-section-label="tasks">My Tasks</span></h1>
+              <div class="filter-pills">
+                <button type="button" class="filter-pill active" data-filter="all">All</button>
+                <button type="button" class="filter-pill" data-filter="upcoming">Upcoming</button>
+                <button type="button" class="filter-pill" data-filter="completed">Complete</button>
+              </div>
+            </div>
+
+            <div class="tasks-controls">
+              <input type="search" id="task-search-input" class="search-box" placeholder="🔍 Search tasks...">
+              <button type="button" id="open-add-task-modal" class="add-task-cta">+ Add task</button>
+            </div>
+          </div>
+
+          <form id="task-creator-form" class="card tint-card task-form-card" hidden>
+            <h3 id="task-form-title">Create New Task</h3>
+            <input type="hidden" id="task-edit-id" value="">
+
+            <div class="task-form-grid">
+              <input type="text" id="task-title-input" placeholder="Task name *" required>
+              <select id="task-subject-input"></select>
+              <select id="task-type-input">
+                <option value="Formative">Formative</option>
+                <option value="Summative">Summative</option>
+                <option value="Homework">Homework</option>
+                <option value="Revision">Revision</option>
+              </select>
+
+              <input type="date" id="task-date-input" aria-label="Due date (optional)">
+
+              <div class="duration-input-group">
+                <input type="number" id="task-duration-num" min="0" step="0.5" placeholder="Time taken">
+                <select id="task-duration-unit" aria-label="Time unit">
+                  <option value="minutes">minutes</option>
+                  <option value="hours">hours</option>
+                </select>
+              </div>
+
+              <select id="task-priority-input" aria-label="Priority">
+                <option value="none">Priority: None</option>
+                <option value="low">Priority: Low</option>
+                <option value="medium">Priority: Medium</option>
+                <option value="high">Priority: High</option>
+              </select>
+
+              <textarea id="task-desc-input" class="task-desc-field" rows="2" placeholder="Description (optional)..."></textarea>
+            </div>
+
+            <div class="task-form-actions">
+              <button type="submit" id="save-task-submit-btn" class="btn-primary">Save Task</button>
+              <button type="button" id="cancel-task-form" class="btn-secondary">Cancel</button>
+            </div>
+          </form>
+
+          <div id="tasks-grouped-container" class="tasks-feed"></div>
+        </div>
+
+        <aside class="tasks-sidebar">
+          <div class="card white-card">
+            <h3 class="font-amoresa-aged sidebar-script-heading">Quick View</h3>
+            <div class="quick-stats-list">
+              <div class="q-row"><span>📋 All</span><strong id="qv-all">0</strong></div>
+              <div class="q-row"><span>❗ High priority</span><strong id="qv-priority">0</strong></div>
+              <div class="q-row"><span>📅 Due this week</span><strong id="qv-week">0</strong></div>
+              <div class="q-row"><span>⏰ Overdue</span><strong id="qv-overdue">0</strong></div>
+            </div>
+          </div>
+
+          <div class="card white-card">
+            <h3 class="font-amoresa-aged sidebar-script-heading">By Subject</h3>
+            <div id="subject-breakdown-list" class="subject-stats-list"></div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         PAGE 3: FOCUS PAGE (POMODORO)
+         ========================================================= -->
+    <section id="page-focus" class="app-page" hidden>
+      <div id="focus-stage" class="focus-stage">
+        <div class="pomo-bg-controls">
+          <label for="pomo-bg-upload" class="pomo-cam-btn" title="Upload custom Pomodoro background">📷 Change BG</label>
+          <input type="file" id="pomo-bg-upload" accept="image/*" hidden>
+          <button type="button" id="pomo-bg-reset" class="pomo-cam-reset" title="Reset to theme background" hidden>↺</button>
+        </div>
+
+        <div class="focus-left-col">
+          <div class="card white-card currently-doing-card">
+            <span class="font-amoresa-aged small-script">Currently Doing</span>
+            <select id="focus-task-select" class="focus-task-dropdown"></select>
+            <p id="focus-task-meta" class="font-railey">No tasks added yet</p>
+          </div>
+
+          <div class="card white-card presets-card">
+            <div class="mode-carousel">
+              <button type="button" id="pomo-mode-prev" class="carousel-arrow" aria-label="Previous mode">‹</button>
+              <h3 id="pomo-mode-title" class="font-amoresa-aged">Focus</h3>
+              <button type="button" id="pomo-mode-next" class="carousel-arrow" aria-label="Next mode">›</button>
+            </div>
+            <div class="mode-dots">
+              <span class="mode-dot" data-mode="short"></span>
+              <span class="mode-dot active" data-mode="focus"></span>
+              <span class="mode-dot" data-mode="long"></span>
+            </div>
+
+            <div id="preset-circles" class="preset-circles"></div>
+
+            <div class="custom-timer-row">
+              <input type="number" id="custom-mins-input" min="1" max="180" placeholder="Mins">
+              <button type="button" id="set-custom-timer-btn" class="font-amoresa-aged custom-pill">Custom</button>
+            </div>
+          </div>
+
+          <div class="cycle-status-pill">
+            <span id="cycle-indicator">Current: Focus → Next: Short Break</span>
+            <button type="button" id="skip-stage-btn" class="skip-btn" title="Skip to next stage">Next ⏭</button>
+          </div>
+        </div>
+
+        <div class="focus-center-col">
+          <div class="focus-clock-circle">
+            <span id="clock-mode-label" class="font-amoresa-aged clock-label">Focus</span>
+            <div id="timer-display" class="timer-digits">25:00</div>
+            <div class="timer-controls">
+              <button type="button" id="timer-start-pause-btn" class="timer-circle-btn" title="Start / Pause">▶</button>
+              <button type="button" id="timer-reset-btn" class="timer-circle-btn secondary" title="Reset">↺</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="focus-right-col">
+          <div class="card white-card schedule-card">
+            <h3 class="font-amoresa-aged">Schedule for Today</h3>
+            <div id="focus-schedule-list" class="schedule-items"></div>
+          </div>
+
+          <div class="card white-card stats-today-card">
+            <h3 class="font-amoresa-aged">Stats Today</h3>
+            <div class="q-row"><span>Focus</span><strong id="focus-minutes-today" class="font-railey">0 mins</strong></div>
+            <div class="q-row"><span>Sessions</span><strong id="focus-sessions-today" class="font-railey">0</strong></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         PAGE 4: SETTINGS PAGE
+         ========================================================= -->
+    <section id="page-settings" class="app-page" hidden>
+      <div class="settings-grid">
+        <div class="settings-col">
+          <div class="card white-card profile-settings-card">
+            <h3 class="font-amoresa-aged">Profile</h3>
+            <div class="profile-preview">
+              <span class="big-avatar">👤</span>
+              <strong id="settings-profile-name"></strong>
+            </div>
+            <form id="profile-edit-form" class="mini-stacked-form">
+              <input type="text" id="edit-first-name" placeholder="First Name" required>
+              <input type="text" id="edit-last-name" placeholder="Last Name" required>
+              <select id="edit-grade">
+                <option value="6">Grade 6</option>
+                <option value="7">Grade 7</option>
+                <option value="8">Grade 8</option>
+                <option value="9">Grade 9</option>
+                <option value="10">Grade 10</option>
+                <option value="11">Grade 11</option>
+                <option value="12">Grade 12</option>
+              </select>
+              <button type="submit" class="mini-btn">Save Profile</button>
+            </form>
+          </div>
+
+          <div class="card white-card interests-card">
+            <h3 class="font-amoresa-aged">My Interests</h3>
+            <div id="interests-checkboxes" class="checklist-group">
+                <label><input type="checkbox" value="Arts"> Arts</label>
+                <label><input type="checkbox" value="Music"> Music</label>
+                <label><input type="checkbox" value="Dance"> Dance</label>
+                <label><input type="checkbox" value="Sports"> Sports</label>
+                <label><input type="checkbox" value="Books"> Books</label>
+                <label><input type="checkbox" value="Movies"> Movies</label>
+                <label><input type="checkbox" value="Gaming"> Gaming</label>
+                <label><input type="checkbox" value="Space"> Space</label>
+                <label><input type="checkbox" value="Science"> Science</label>
+                <label><input type="checkbox" value="Math"> Math</label>
+                <label><input type="checkbox" value="Animals"> Animals</label>
+                <label><input type="checkbox" value="Food"> Food</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-col">
+          <div class="card white-card">
+            <h3 class="font-amoresa-aged">Interest Effects</h3>
+            <div class="checklist-group">
+              <label><input type="checkbox" id="effect-collectibles" checked> Collectibles</label>
+              <label><input type="checkbox" id="effect-backgrounds" checked> Backgrounds</label>
+            </div>
+          </div>
+
+          <div class="card white-card subjects-settings-card">
+            <div class="goals-top">
+              <h3 class="font-amoresa-aged">Subjects</h3>
+              <button type="button" id="settings-add-subject-btn" class="circle-plus">+</button>
+            </div>
+            <form id="settings-subject-form" class="inline-add-form" hidden>
+              <input type="text" id="settings-new-subject" placeholder="Add subject...">
+              <button type="submit" class="mini-btn">Add</button>
+            </form>
+            <div id="settings-subjects-list" class="numbered-list"></div>
+          </div>
+        </div>
+
+        <div class="settings-col">
+          <div class="card white-card themes-card">
+            <h3 class="font-amoresa-aged">Themes</h3>
+            <div id="theme-options-list" class="theme-list">
+              <button type="button" class="theme-option active" data-theme="Default">
+                <span>Default</span>
+                <span class="swatches"><i style="background:#2A4F8D"></i><i style="background:#86AADF"></i><i style="background:#DDEDFB"></i></span>
+              </button>
+              <button type="button" class="theme-option" data-theme="Ember">
+                <span>Ember</span>
+                <span class="swatches"><i style="background:#A8302B"></i><i style="background:#F30B01"></i><i style="background:#F46A62"></i></span>
+              </button>
+              <button type="button" class="theme-option" data-theme="Sunset">
+                <span>Sunset</span>
+                <span class="swatches"><i style="background:#FF904E"></i><i style="background:#F5B738"></i><i style="background:#FFDB92"></i></span>
+              </button>
+              <button type="button" class="theme-option" data-theme="Nature">
+                <span>Nature</span>
+                <span class="swatches"><i style="background:#344740"></i><i style="background:#8EAC6A"></i><i style="background:#DAE6C8"></i></span>
+              </button>
+              <button type="button" class="theme-option" data-theme="Galaxy">
+                <span>Galaxy</span>
+                <span class="swatches"><i style="background:#471AA1"></i><i style="background:#A168C8"></i><i style="background:#BEA8DE"></i></span>
+              </button>
+              <button type="button" class="theme-option" data-theme="Y2K">
+                <span>Y2K</span>
+                <span class="swatches"><i style="background:#FF0091"></i><i style="background:#FF66C4"></i><i style="background:linear-gradient(135deg,#AFAFAF,#F6F6F6)"></i></span>
+              </button>
+              <button type="button" class="theme-option" data-theme="Black & White">
+                <span>Black &amp; White</span>
+                <span class="swatches"><i style="background:#000000"></i><i style="background:#A6A6A6"></i><i style="background:#FFFFFF;border:1px solid #999"></i></span>
+              </button>
+              <button type="button" class="theme-option" data-theme="Custom">
+                <span>Custom</span>
+                <span class="swatches"><i id="swatch-custom-1" style="background:#2A4F8D"></i><i id="swatch-custom-2" style="background:#86AADF"></i><i id="swatch-custom-3" style="background:#DDEDFB"></i></span>
+              </button>
+            </div>
+
+            <div id="custom-theme-controls" class="custom-theme-box" hidden>
+              <label>Primary <input type="color" id="custom-primary" value="#2A4F8D"></label>
+              <label>Secondary <input type="color" id="custom-secondary" value="#86AADF"></label>
+              <label>Tertiary <input type="color" id="custom-tertiary" value="#DDEDFB"></label>
+            </div>
+          </div>
+
+          <div class="card white-card rewards-card">
+            <h3 class="font-amoresa-aged">Rewards</h3>
+            <div class="reward-toggle-row">
+              <span>★ Stars</span>
+              <input type="checkbox" id="toggle-stars-reward" checked>
+            </div>
+            <div class="reward-toggle-row">
+              <span>🔥 Streak</span>
+              <input type="checkbox" id="toggle-streak-reward" checked>
+            </div>
+            <div class="reward-toggle-row">
+              <span>🧩 Collectibles</span>
+              <input type="checkbox" id="toggle-collectibles-reward" checked>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-col">
+          <div class="card white-card">
+            <div class="goals-top">
+              <h3 class="font-amoresa-aged">Goals</h3>
+              <button type="button" id="settings-add-goal-btn" class="circle-plus">+</button>
+            </div>
+            <div id="settings-goals-list" class="goals-items"></div>
+          </div>
+
+          <div class="card white-card rename-card">
+            <h3 class="font-amoresa-aged">Rename Section</h3>
+            <div class="rename-inputs">
+              <input type="text" data-rename-target="home" value="Home">
+              <input type="text" data-rename-target="tasks" value="Tasks">
+              <input type="text" data-rename-target="focus" value="Focus">
+              <input type="text" data-rename-target="settings" value="Settings">
+            </div>
+            <button type="button" id="logout-btn" class="logout-btn">Log Out</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</body>
+</html>
