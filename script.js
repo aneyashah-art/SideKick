@@ -1095,7 +1095,7 @@ const themePalettes = {
   "Nature":        { primary: "#344740", secondary: "#8EAC6A", tertiary: "#DAE6C8", pomoFile: "nature" },
   "Galaxy":        { primary: "#471AA1", secondary: "#A168C8", tertiary: "#BEA8DE", pomoFile: "galaxy" },
   "Y2K":           { primary: "#FF0091", secondary: "#FF66C4", tertiary: "linear-gradient(135deg, #AFAFAF, #F6F6F6)", pomoFile: "y2k" },
-  "Black & White": { primary: "#000000", secondary: "#A6A6A6", tertiary: "#FFFFFF", pomoFile: "bw" }
+  "Black & White": { primary: "#000000", secondary: "#A6A6A6", tertiary: "#FFFFFF", pomoFile: "b&w" }
 };
 
 /* Resolves case/extension variations (.jpg, .JPG, .jpeg, capitalized) for Pomodoro backgrounds */
